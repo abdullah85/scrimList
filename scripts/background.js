@@ -1,32 +1,38 @@
-// Initially it is active
-const statusKey = 'scrimListActive'
-chrome.storage.local.set({ scrimListActive: true });
-// When active, the badge is ON, empty otherwise
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.action.setBadgeText({
-    text: 'ON'
-  });
+chrome.runtime.onInstalled.addListener(async () => {
+  await Promise.all([
+    chrome.storage.local.set({ badge: 'ON' }),
+    chrome.action.setBadgeText({ text: 'ON' })
+  ]);
+  chrome.tabs.create({ url: 'onboarding.html' });
 });
 
-// When the user clicks on the extension action
-chrome.action.onClicked.addListener(async (tab) => {
-  const prevState = await chrome.action.getBadgeText({});
-  const nextState = prevState === 'ON' ? '' : 'ON';
-  // Set the action badge to the next state
-  await chrome.action.setBadgeText({
-    text: nextState
-  });
-
-  if (nextState == 'ON') {
-    chrome.storage.local.set({ scrimListActive: true });
-  } else {
-    chrome.storage.local.set({ scrimListActive: false });
-  }
+chrome.action.onClicked.addListener(async () => {
+  const current = await getActive();
+  await setActive(current === 'ON' ? '' : 'ON');
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if(message.status == statusKey) {
-    chrome.storage.local.get(statusKey).then(sendResponse);
+  if (message.key === 'badge') {
+    handleBadgeMessage().then(sendResponse);
     return true;
   }
 });
+
+async function getActive() {
+  const { badge } = await chrome.storage.local.get('badge');
+  // fallback to ON when badge is undefined or null (not likely)
+  return badge ?? 'ON';
+}
+
+async function setActive(value) {
+  await Promise.all([
+    chrome.storage.local.set({ badge: value }),
+    chrome.action.setBadgeText({ text: value })
+  ]);
+}
+
+async function handleBadgeMessage() {
+  const active = await getActive();
+  await chrome.action.setBadgeText({ text: active }); // re-sync badge on wake
+  return { badge: active };
+}
