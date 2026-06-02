@@ -3,7 +3,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     chrome.storage.local.set({ badge: 'ON' }),
     chrome.action.setBadgeText({ text: 'ON' })
   ]);
-  chrome.tabs.create({ url: 'onboarding.html' });
+  chrome.tabs.create({ url: 'onboarding/index.html' });
 });
 
 chrome.action.onClicked.addListener(async () => {
