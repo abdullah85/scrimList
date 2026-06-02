@@ -1,6 +1,6 @@
 {
   "name": "ScrimList",
-  "version": "0.0.0.1",
+  "version": "0.1.0.0",
   "description": "ScrimList numbers each topic in a path or course in scrimba.",
   "manifest_version": 3,
   "action": {

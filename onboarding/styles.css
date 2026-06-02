@@ -15,6 +15,10 @@ a {
   color: #1D3557;
 }
 
+#footer ul a {
+    color: #E63946;
+}
+
 body {
   margin: 0;
   text-align: center;
@@ -82,12 +86,13 @@ h4 {
 .card {
   display: flex;
   justify-content: space-around;
-  width: 750px;
-  padding: 25px;
+  width: 775px;
+  padding: 5px 25px;
   margin: 0px auto;
   background-color: #A8DADC;
-  border-bottom: 8px solid #1D3557;
+  border-bottom: 17px solid #1D3557;
   border-radius: 10px;
+  box-shadow: 7px 0px #1D3557;
 }
 
 .card div {
@@ -111,10 +116,16 @@ p {
 }
 
 .avatar {
-  width: 279px;
-  height: 279px;
+  width: 319px;
+  height: 319px;
   border-radius: 50%;
-  margin: 31px 3px 5px;
+  margin: 37px 5px 5px;
+}
+
+.github {
+  width: 19px;
+  height: 19px;
+  margin: 0px 1px -1px;
 }
 
 #footer {
