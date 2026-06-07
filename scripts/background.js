@@ -1,7 +1,5 @@
 chrome.runtime.onInstalled.addListener(async () => {
-  await Promise.all([
-    chrome.action.setBadgeText({ text: 'ON' })
-  ]);
+  await chrome.action.setBadgeText({ text: 'ON' })
   chrome.tabs.create({ url: 'onboarding/index.html' });
 });
 
