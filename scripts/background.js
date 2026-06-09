@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 chrome.action.onClicked.addListener(async () => {
   const current = await getActive();
-  await setActive(current === 'ON' ? 'OFF' : 'ON');
+  await setActive(current === 'ON' ? '' : 'ON');
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
