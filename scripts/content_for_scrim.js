@@ -1,52 +1,133 @@
 (async () => {
-  // Obtain the first topic under the first toc-root
   const firstTopic = getFirstTopic();
+
   const result = await chrome.runtime.sendMessage({
     key: 'badge'
   });
+
   const scrimListActive = result?.badge === 'ON';
 
   if (firstTopic && scrimListActive) {
     setNumberedTitles(firstTopic);
+    observeTocChanges();
   }
 })();
 
-// A very concise, structural approach to obtain the first topic
+const separator = ' | ';
+
+/**
+ * Obtain the first topic under the first toc-root.
+ */
 function getFirstTopic() {
   return document.querySelector('toc-root')?.children[1]?.children[0];
 }
 
-const separator = " | ";
-// Render all topics as numbered list starting at firstTopic
+/**
+ * Render all sibling topics as a numbered list.
+ */
 function setNumberedTitles(firstTopic) {
-  const topicsList = firstTopic.parentElement.childNodes;
-  // Type of course is either nested or a simple list of scrims
+  if (!firstTopic) return;
+
   const tagName = firstTopic.tagName;
-  if (tagName !== 'TOC-GROUP' && tagName !== 'TOC-SCRIM-ITEM') return;
+
+  if (tagName !== 'TOC-GROUP' && tagName !== 'TOC-SCRIM-ITEM') {
+    return;
+  }
+
   const nestedCourse = tagName === 'TOC-GROUP';
 
-  topicsList.forEach((currentTopic, i) => {
-    const title = nestedCourse ? getNestedTitle(currentTopic) : getSimpleTitle(currentTopic);
+  const topicsList = [...firstTopic.parentElement.children].filter(
+    node =>
+      node.tagName === 'TOC-GROUP' ||
+      node.tagName === 'TOC-SCRIM-ITEM'
+  );
 
-    if (title) setTopicTitle(title, i + 1);
+  topicsList.forEach((currentTopic, index) => {
+    const title = nestedCourse
+      ? getNestedTitle(currentTopic)
+      : getSimpleTitle(currentTopic);
+
+    if (title) {
+      setTopicTitle(title, index + 1);
+    }
   });
 }
 
-// Getting the title also relies on the structure of the page
-function getNestedTitle(topic) { // Title is a span element for nested courses
-  const nestedTitle = topic?.children[0]?.children[0]?.children[1]?.children[0];
+/**
+ * Title for nested courses.
+ */
+function getNestedTitle(topic) {
+  const nestedTitle =
+    topic?.children?.[0]
+      ?.children?.[0]
+      ?.children?.[1]
+      ?.children?.[0];
+
   return nestedTitle ?? getSimpleTitle(topic);
 }
 
-// The title is within a div element
+/**
+ * Title for simple scrim items.
+ */
 function getSimpleTitle(topic) {
-  return topic?.children[1]?.children[1]?.children[0];
+  return topic?.children?.[1]
+    ?.children?.[1]
+    ?.children?.[0];
 }
 
-// The same approach is applicable to both types of title
+/**
+ * Set numbering only once.
+ */
 function setTopicTitle(title, numberToSet) {
-  // Neet to review the approach below as it would not work if title has the separator.
-  if (title.textContent.includes(separator)) return;
+  if (title.dataset.numbered === 'true') {
+    return;
+  }
+
+  title.dataset.numbered = 'true';
+
   const prefix = numberToSet < 10 ? '0' : '';
-  title.textContent = `${prefix}${numberToSet}${separator}${title.textContent}`;
+
+  title.textContent =
+    `${prefix}${numberToSet}${separator}${title.textContent}`;
+}
+
+/**
+ * Observe TOC changes.
+ */
+function observeTocChanges() {
+  const toc = document.querySelector('toc-items');
+  const tocScrimItems = document.querySelector('toc-scrim-item');
+
+  if (!toc) return;
+
+  let pending = false;
+
+  const observer = new MutationObserver(() => {
+    if (pending) return;
+
+    pending = true;
+
+    requestAnimationFrame(() => {
+      pending = false;
+
+      document
+        .querySelectorAll('toc-group:not(.on)')
+        .forEach(group => {
+          setNumberedTitles(group);
+        });
+
+      document
+        .querySelectorAll('toc-group:not(.on)')
+        .forEach(group => {
+          setNumberedTitles(group);
+        });
+    });
+  });
+
+  let tocRoot = document.querySelector('toc-root');
+  observer.observe(tocRoot, {
+    childList: true,
+    subtree: true,
+    attributes: true
+  });
 }
