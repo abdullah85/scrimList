@@ -95,10 +95,9 @@ function setTopicTitle(title, numberToSet) {
  * Observe TOC changes.
  */
 function observeTocChanges() {
-  const toc = document.querySelector('toc-items');
-  const tocScrimItems = document.querySelector('toc-scrim-item');
+  const tocRoot = document.querySelector('toc-root');
 
-  if (!toc) return;
+  if (!tocRoot) return;
 
   let pending = false;
 
@@ -115,16 +114,9 @@ function observeTocChanges() {
         .forEach(group => {
           setNumberedTitles(group);
         });
-
-      document
-        .querySelectorAll('toc-group:not(.on)')
-        .forEach(group => {
-          setNumberedTitles(group);
-        });
     });
   });
 
-  let tocRoot = document.querySelector('toc-root');
   observer.observe(tocRoot, {
     childList: true,
     subtree: true,
