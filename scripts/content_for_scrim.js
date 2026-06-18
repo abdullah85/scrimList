@@ -91,6 +91,11 @@ function setTopicTitle(title, numberToSet) {
     `${prefix}${numberToSet}${separator}${title.textContent}`;
 }
 
+// Returns the first scrim item in the toc group if one exists.
+function getFirstScrim(tocGroup) {
+  return tocGroup?.children?.[1]?.children?.[2]?.children?.[1];
+}
+
 /**
  * Observe TOC changes.
  */
@@ -110,9 +115,13 @@ function observeTocChanges() {
       pending = false;
 
       document
-        .querySelectorAll('toc-group:not(.on)')
+        .querySelectorAll('toc-group')
         .forEach(group => {
           setNumberedTitles(group);
+          let scrim = getFirstScrim(group);
+          if(scrim) {
+            setNumberedTitles(scrim);
+          }
         });
     });
   });
