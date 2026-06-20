@@ -52,8 +52,8 @@ function injectLogo(firstTopic) {
   container.style.gap = '6px';
   container.style.cursor = 'pointer';
   container.style.userSelect = 'none';
-  container.style.margin = '10px 0 14px 4px';
-  container.style.fontSize = '12px';
+  container.style.margin = '3px 0 0px 31px';
+  container.style.fontSize = '11px';
   container.style.color = '#888';
   container.style.width = 'fit-content';
 
@@ -64,7 +64,7 @@ function injectLogo(firstTopic) {
   img.alt = 'ScrimList Logo';
 
   // Compact size matching typical op.icon size
-  const iconSize = '18px';
+  const iconSize = '13px';
   img.style.width = iconSize;
   img.style.height = iconSize;
   img.style.display = 'block';
@@ -73,7 +73,9 @@ function injectLogo(firstTopic) {
   // Text to the right
   const textSpan = document.createElement('span');
   textSpan.id = 'scrimlist-copy-text';
-  textSpan.textContent = 'Copy list';
+  textSpan.style.cursor = 'pointer';
+  textSpan.style.marginLeft = '7px';
+  textSpan.textContent = 'Copy Topics list';
   textSpan.style.transition = 'color 0.2s';
 
   container.appendChild(img);
@@ -82,7 +84,7 @@ function injectLogo(firstTopic) {
   // Click handler to copy content
   container.addEventListener('click', async () => {
     try {
-      const content = getTopicsTextList();
+      const content = getTopicsTextList(firstTopic);
       if (content) {
         await navigator.clipboard.writeText(content);
         const originalText = textSpan.textContent;
@@ -95,14 +97,14 @@ function injectLogo(firstTopic) {
       } else {
         textSpan.textContent = 'No topics found';
         setTimeout(() => {
-          textSpan.textContent = 'Copy list';
+          textSpan.textContent = 'Copy Topics List';
         }, 1500);
       }
     } catch (err) {
       console.error('Failed to copy text: ', err);
       textSpan.textContent = 'Error copying';
       setTimeout(() => {
-        textSpan.textContent = 'Copy list';
+        textSpan.textContent = 'Copy Topics List';
       }, 1500);
     }
   });
@@ -117,14 +119,14 @@ function injectLogo(firstTopic) {
     img.style.filter = 'none';
   });
 
-  opIcon.parentElement.insertBefore(container, opIcon);
+  let itemEl = firstTopic.querySelector('toc-item-head');
+  itemEl.parentElement.appendChild(container);
 }
 
 /**
- * Get the full text list of all numbered topics.
+ * Get the full text list of all numbered topics given firstTopic.
  */
-function getTopicsTextList() {
-  const firstTopic = getFirstTopic();
+function getTopicsTextList(firstTopic) {
   if (!firstTopic) return '';
 
   const tagName = firstTopic.tagName;
