@@ -14,8 +14,10 @@ This extension is **not officially endorsed** or affiliated with Scrimba.
   - [x] Note: User needs to reload existing pages or tabs that have already been opened to reflect modified state.
 - [x] Advanced Numbering options for nested topics - Numbering subtopics[^2].
   - [x] Numbering must appear for subtopics, list of topics with first or all scrim items
-- [ ] Copy and Paste list of topics to clipboard
-  - [ ] Allow for copying titles list to clipboard on clicking an image icon injected into the page.
+- [ ] Copy and Paste list of topics to clipboard - List of Top Level Topics and Nested Topics
+  - [x] Allow for copying titles list to clipboard on clicking the logo icon injected into the page.
+  - [x] The logo is injected for the very first topic and the top level topics are copied to clipboard on click.
+  - [ ] The logo icon is available for each nested topic and corresponding topics list is copied to clipboard on click.
 - [ ] Advanced Dynamic functionality - ensure numbering loads when the user visits a page via multiple clicks.
   - [ ]  Internal routing within the page must result in correct result based on current state.
   - [ ]  Check if possible to dynamically reload the current page when switched ON or OFF.
