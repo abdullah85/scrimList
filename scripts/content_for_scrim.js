@@ -8,7 +8,6 @@
   const scrimListActive = result?.badge === 'ON';
 
   if (firstTopic && scrimListActive) {
-    injectLogo(firstTopic);
     setNumberedTitles(firstTopic);
     observeTocChanges();
   }
@@ -24,27 +23,15 @@ function getFirstTopic() {
 }
 
 /**
- * Inject the extension logo above the first topic.
+ * Embed the logo and copy text just below any first topic.
  */
-function injectLogo(firstTopic) {
-  if (!firstTopic || document.getElementById('scrimlist-logo-container')) return;
+function embedCopyButton(firstTopic) {
+  if (!firstTopic || firstTopic.dataset.embeddedCopyButton == 'true') return;
 
-  const tocRoot = document.querySelector('toc-root');
-  let opIcon = null;
-  if (tocRoot) {
-    opIcon = tocRoot.querySelector('op\\.icon') ||
-      tocRoot.querySelector('op.icon') ||
-      tocRoot.querySelector('op-icon') ||
-      tocRoot.querySelector('.op-icon') ||
-      tocRoot.querySelector('.op\\.icon');
-  }
-  if (!opIcon) {
-    opIcon = firstTopic;
-  }
-
+  firstTopic.dataset.embeddedCopyButton = 'true';
   // Create container
   const container = document.createElement('div');
-  container.id = 'scrimlist-logo-container';
+  container.classList.add('scrimlist-logo-container');
 
   // Style container for a compact and unobtrusive look
   container.style.display = 'inline-flex';
@@ -58,8 +45,7 @@ function injectLogo(firstTopic) {
   container.style.width = 'fit-content';
 
   // Image (Logo)
-  const img = document.createElement('img');
-  img.id = 'scrimlist-logo';
+  const img = document.createElement('img')
   img.src = chrome.runtime.getURL('icons/icon_128.png');
   img.alt = 'ScrimList Logo';
 
@@ -68,11 +54,11 @@ function injectLogo(firstTopic) {
   img.style.width = iconSize;
   img.style.height = iconSize;
   img.style.display = 'block';
-  img.style.borderRadius = '3px';
+  img.style.borderRadius = '1.5px';
 
   // Text to the right
   const textSpan = document.createElement('span');
-  textSpan.id = 'scrimlist-copy-text';
+  textSpan.classList.add('scrimlist-copy-text');
   textSpan.style.cursor = 'pointer';
   textSpan.style.marginLeft = '7px';
   textSpan.textContent = 'Copy Topics list';
@@ -80,9 +66,16 @@ function injectLogo(firstTopic) {
 
   container.appendChild(img);
   container.appendChild(textSpan);
+  let itemType = "GROUP";
+  if (firstTopic.tagName === "TOC-SCRIM-ITEM") {
+    itemType = "SCRIM";
+  }
 
   // Click handler to copy content
-  container.addEventListener('click', async () => {
+  container.addEventListener('click', async (evt) => {
+    evt.stopPropagation();
+    evt.preventDefault();
+
     try {
       const content = getTopicsTextList(firstTopic);
       if (content) {
@@ -120,7 +113,12 @@ function injectLogo(firstTopic) {
   });
 
   let itemEl = firstTopic.querySelector('toc-item-head');
-  itemEl.parentElement.appendChild(container);
+  if (itemType === "SCRIM") {
+    const itemHead = firstTopic.querySelector('toc-item-head');
+    itemHead.appendChild(container);
+  } else {
+    itemEl.parentElement.appendChild(container);
+  }
 }
 
 /**
@@ -178,6 +176,10 @@ function setNumberedTitles(firstTopic) {
     const title = nestedCourse
       ? getNestedTitle(currentTopic)
       : getSimpleTitle(currentTopic);
+
+    if (index === 0) {
+      embedCopyButton(currentTopic);
+    }
 
     if (title) {
       setTopicTitle(title, index + 1);
@@ -245,11 +247,6 @@ function observeTocChanges() {
 
     requestAnimationFrame(() => {
       pending = false;
-
-      const currentFirstTopic = getFirstTopic();
-      if (currentFirstTopic) {
-        injectLogo(currentFirstTopic);
-      }
 
       document
         .querySelectorAll('toc-group')
