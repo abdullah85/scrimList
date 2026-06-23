@@ -33,16 +33,25 @@ function embedCopyButton(firstTopic) {
   const container = document.createElement('div');
   container.classList.add('scrimlist-logo-container');
 
-  // Style container for a compact and unobtrusive look
+  // Style container to look like an inline rating tag and remain clickable.
   container.style.display = 'inline-flex';
   container.style.alignItems = 'center';
-  container.style.gap = '6px';
+  container.style.gap = '4px';
   container.style.cursor = 'pointer';
   container.style.userSelect = 'none';
-  container.style.margin = '3px 0 0px 31px';
-  container.style.fontSize = '11px';
-  container.style.color = '#888';
-  container.style.width = 'fit-content';
+  container.style.pointerEvents = 'auto';
+  container.style.margin = '0 0 0 5px';
+  container.style.fontSize = '12px';
+  container.style.color = '#d1d5db';
+  container.style.padding = '0';
+  container.style.border = 'none';
+  container.style.borderRadius = '0';
+  container.style.backgroundColor = 'transparent';
+  container.style.whiteSpace = 'nowrap';
+  container.style.lineHeight = '1';
+  container.style.opacity = '0.92';
+  container.style.verticalAlign = 'middle';
+  container.style.alignSelf = 'center';
 
   // Image (Logo)
   const img = document.createElement('img')
@@ -55,13 +64,17 @@ function embedCopyButton(firstTopic) {
   img.style.height = iconSize;
   img.style.display = 'block';
   img.style.borderRadius = '1.5px';
+  img.style.pointerEvents = 'none';
 
   // Text to the right
   const textSpan = document.createElement('span');
   textSpan.classList.add('scrimlist-copy-text');
   textSpan.style.cursor = 'pointer';
-  textSpan.style.marginLeft = '7px';
-  textSpan.textContent = 'Copy Topics list';
+  textSpan.style.marginLeft = '5px';
+  textSpan.style.pointerEvents = 'none';
+  textSpan.style.fontWeight = '600';
+  textSpan.style.color = '#d1d5db';
+  textSpan.textContent = 'Copy';
   textSpan.style.transition = 'color 0.2s';
 
   container.appendChild(img);
@@ -90,34 +103,42 @@ function embedCopyButton(firstTopic) {
       } else {
         textSpan.textContent = 'No topics found';
         setTimeout(() => {
-          textSpan.textContent = 'Copy Topics List';
+          textSpan.textContent = 'Copy';
         }, 1500);
       }
     } catch (err) {
       console.error('Failed to copy text: ', err);
       textSpan.textContent = 'Error copying';
       setTimeout(() => {
-        textSpan.textContent = 'Copy Topics List';
+        textSpan.textContent = 'Copy';
       }, 1500);
     }
   });
 
   // Hover effects
   container.addEventListener('mouseenter', () => {
-    textSpan.style.color = '#fff';
+    container.style.borderColor = 'rgba(255, 255, 255, 0.85)';
     img.style.filter = 'brightness(1.2)';
   });
   container.addEventListener('mouseleave', () => {
-    textSpan.style.color = '#888';
+    container.style.borderColor = 'rgba(255, 255, 255, 0.5)';
     img.style.filter = 'none';
   });
 
-  let itemEl = firstTopic.querySelector('toc-item-head');
-  if (itemType === "SCRIM") {
-    const itemHead = firstTopic.querySelector('toc-item-head');
-    itemHead.appendChild(container);
+  const itemHead = firstTopic.querySelector('toc-item-head');
+  if (itemHead) {
+    const headerElem = itemHead.querySelector('h2');
+    if (headerElem) {
+      if (!headerElem.style.display) headerElem.style.display = 'flex';
+      headerElem.style.alignItems = 'center';
+      headerElem.appendChild(container);
+    } else {
+      if (!itemHead.style.display) itemHead.style.display = 'flex';
+      itemHead.style.alignItems = 'center';
+      itemHead.appendChild(container);
+    }
   } else {
-    itemEl.parentElement.appendChild(container);
+    firstTopic.appendChild(container);
   }
 }
 
