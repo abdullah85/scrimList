@@ -4,22 +4,21 @@
   const result = await chrome.runtime.sendMessage({
     key: 'badge'
   });
-
   const scrimListActive = result?.badge === 'ON';
 
-  if (firstTopic && scrimListActive) {
-    setNumberedTitles(firstTopic);
-    observeTocChanges();
+  if (firstTopic) {
+    setNumberedTitles(firstTopic, scrimListActive);
+    observeTocChanges(scrimListActive);
   }
 })();
 
 const separator = ' | ';
 
 /**
- * Obtain the first topic under the first toc-root.
+ * Obtain the first topic under the toc-group element.
  */
 function getFirstTopic() {
-  return document.querySelector('toc-root')?.children[1]?.children[0];
+  return document.querySelector('toc-group')?.children[0];
 }
 
 /**
@@ -40,7 +39,7 @@ function embedCopyButton(firstTopic) {
   container.style.cursor = 'pointer';
   container.style.userSelect = 'none';
   container.style.pointerEvents = 'auto';
-  container.style.margin = '0 0 0 5px';
+  container.style.margin = '0 0 0 7px';
   container.style.fontSize = '12px';
   container.style.color = '#d1d5db';
   container.style.padding = '0';
@@ -70,7 +69,7 @@ function embedCopyButton(firstTopic) {
   const textSpan = document.createElement('span');
   textSpan.classList.add('scrimlist-copy-text');
   textSpan.style.cursor = 'pointer';
-  textSpan.style.marginLeft = '5px';
+  textSpan.style.marginLeft = '3px';
   textSpan.style.pointerEvents = 'none';
   textSpan.style.fontWeight = '600';
   textSpan.style.color = '#d1d5db';
@@ -135,7 +134,12 @@ function embedCopyButton(firstTopic) {
     } else {
       if (!itemHead.style.display) itemHead.style.display = 'flex';
       itemHead.style.alignItems = 'center';
-      itemHead.appendChild(container);
+      titleElem = itemHead.children?.[1];
+      if (titleElem) {
+        titleElem.appendChild(container);
+      } else {
+        itemHead.appendChild(container);
+      }
     }
   } else {
     firstTopic.appendChild(container);
@@ -176,7 +180,7 @@ function getTopicsTextList(firstTopic) {
 /**
  * Render all sibling topics as a numbered list.
  */
-function setNumberedTitles(firstTopic) {
+function setNumberedTitles(firstTopic, scrimListActive) {
   if (!firstTopic) return;
 
   const tagName = firstTopic.tagName;
@@ -193,14 +197,14 @@ function setNumberedTitles(firstTopic) {
       node.tagName === 'TOC-SCRIM-ITEM'
   );
 
+  if(topicsList.length === 0) return;
+  embedCopyButton(topicsList[0]);
+  if(!scrimListActive) return;
+
   topicsList.forEach((currentTopic, index) => {
     const title = nestedCourse
       ? getNestedTitle(currentTopic)
       : getSimpleTitle(currentTopic);
-
-    if (index === 0) {
-      embedCopyButton(currentTopic);
-    }
 
     if (title) {
       setTopicTitle(title, index + 1);
@@ -254,7 +258,7 @@ function getFirstScrim(tocGroup) {
 /**
  * Observe TOC changes.
  */
-function observeTocChanges() {
+function observeTocChanges(scrimListActive) {
   const tocRoot = document.querySelector('toc-root');
 
   if (!tocRoot) return;
@@ -272,10 +276,10 @@ function observeTocChanges() {
       document
         .querySelectorAll('toc-group')
         .forEach(group => {
-          setNumberedTitles(group);
+          setNumberedTitles(group, scrimListActive);
           let scrim = getFirstScrim(group);
           if (scrim) {
-            setNumberedTitles(scrim);
+            setNumberedTitles(scrim, scrimListActive);
           }
         });
     });
