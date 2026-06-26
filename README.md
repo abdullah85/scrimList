@@ -28,7 +28,7 @@ Clicking on the icon will toggle the active status of the extension.
 
 When the extension is active, the icon displays <img src="media/icon_on.png" width="35px" height="35px" align="top" alt="ScrimList icon with ON text."> and the lessons will be numbered.
 
-![Activated Example](media/ScrimbaFullStack-a2.png)
+![Activated Example](media/ScrimbaFullStack-a3.png)
 
 In case, they do not appear, try reloading the page.
 
