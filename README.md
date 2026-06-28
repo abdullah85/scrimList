@@ -1,8 +1,6 @@
 # ScrimList
 
-ScrimList is a Google Chrome Extension that automatically numbers topics for any course in Scrimba. 
-This helps learners quickly identify the number and sequence of topics for a course. 
-There is no need to manually count or guess the number of topics anymore when learning on Scrimba. 
+ScrimList is a Google Chrome Extension that allows you to copy the list of topics for any course in Scrimba while allowing numbered prefixes to each of the topics if needed. This helps learners estimate the progress made while also allowing better note taking. There is no need to manually type in or count the topics for any course in Scrimba.
 
 As a learner on Scrimba, I have developed this extension independently. 
 
@@ -18,7 +16,7 @@ This extension is **not** officially endorsed or affiliated with Scrimba.
 
 Once installed open a course or path such as [Full Stack Developer Path](https://scrimba.com/fullstack-path-c0fullstack)
 
-Please refer to the Demo video below : [video](https://www.youtube.com/watch?v=bYJ4xlBFBpg)
+Please refer to the Demo video below :
 <p align="center" width="100%">
 <video src="https://github.com/user-attachments/assets/16cf20e0-6767-4329-946a-9f41ef069429" width="80%" controls></video>
 </p>

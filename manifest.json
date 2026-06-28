@@ -1,7 +1,7 @@
 {
   "name": "ScrimList",
-  "version": "0.1.0.0",
-  "description": "ScrimList numbers each topic in a path or course in scrimba.",
+  "version": "1.1.0.1",
+  "description": "ScrimList allows you to copy and number the list of topics for a course in scrimba.",
   "manifest_version": 3,
   "action": {
     "default_title": "ScrimList",
